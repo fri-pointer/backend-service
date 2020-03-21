@@ -25,7 +25,7 @@ script:
   - docker build -t fri-pointer/backend-service .
 
 after_success:
-  - mvn deploy -DskipTests=true --settings .ci/settings.xml -P !default,deploy-lib
+  - mvn deploy -DskipTests=true --settings .ci/settings.xml -P !default,deploy-lib,snapshot
 #  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 #  - docker push fri-pointer/backend-service
 
