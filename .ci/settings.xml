@@ -36,6 +36,16 @@
                         <enabled>true</enabled>
                     </snapshots>
                 </repository>
+                <repository>
+                    <id>fri-pointer-public</id>
+                    <url>https://nexus.mjamsek.com/repository/fri-pointer-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
