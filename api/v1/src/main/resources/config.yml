@@ -33,7 +33,7 @@ kumuluzee:
         type: liveness
   datasources:
     - jndi-name: jdbc/mainDB
-      connection-url: jdbc:postgresql://localhost:5432/backend-service
+      connection-url: jdbc:postgresql://localhost:5432/fri-pointer
       username: postgres
       password: postgres
       pool:
