@@ -21,7 +21,7 @@
         </profile>
 
         <profile>
-            <id>fri-pointer-snapshots</id>
+            <id>fri-pointer</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
