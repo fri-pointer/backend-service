@@ -29,3 +29,14 @@ after_success:
 #  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 #  - docker push fri-pointer/backend-service
 
+notifications:
+  email: false
+  slack:
+    rooms:
+      - secure: Qf8Ha1eFFxvEQhVP6GKSNiRCTcguILBZk9qyU9bO82pIbIZVkpqPIYX3sGlR0EyqlLO1KarW0WVHYvNC4X2DCK+1uxoDFvwcwu8/Sd9BZva/Q2cJb7HflazctvN/2DwFesi7NzUgZP2mvBups8d0Nu6uIjmA1Q1vp+WPvzIcB+ur2i+B2eErkamBcivW6N2NdLxtPctEX8NW82ZglAKyFph4s4dVwW/zfWZgpm8tw99s1uKiR9/+Hq/UTuEJ+qm2DQQZ9kKS0Cck1q0HsZfmCy4UUeMbtwCsY1v4OzQbfTjiZBGaPt9HOIESolw0Vtai4D6qOKDzyBZ94qdCpyXzM9+CL4F4DgU84OGNR3BMbi1uxvt3CgHtKJ81JL9Nnb86K2tFOWAS2lzDwc9DrGM0h/MRSlyqxG2091CjQ5VL+N9MhZg5dXTxOAo5WCZvKtTsshpi/Xq1+wqumJGAQUdQC0GRs8BTtxySvYSvhZWET6MUTA3fQp4L59l9i5FimV+A79Ru6QoZxo585LKFDOM+MDdQcZ/6msIYb8xJyYRnSmqg+c0C8MXChOXzCu46eHG+KcCbMFdxEaS0b/lKEhq93XEfwKNkmgJMNgBS+oScMehEajDDaTjrJFpnAaoMISX2pEi8DLNQDgNdMvMUFiQBJAHu+eMOCctA0mf/WU3hf70=
+    on_success: always
+    on_failure: always
+    template:
+      - "`%{result}` build for repo `%{repository_slug}` on branch `%{branch}`. Build (<%{build_url}|#%{build_number}>). Commit (<%{compare_url}|%{commit}>)."
+      - "Execution time: *%{duration}*"
+      - "Message: *%{message}*"
