@@ -1,4 +1,4 @@
-package io.fri-pointer.api;
+package io.fripointer.api;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

@@ -1,4 +1,4 @@
-package io.fri-pointer.persistence;
+package io.fripointer.persistence;
 
 import org.hibernate.annotations.GenericGenerator;
 

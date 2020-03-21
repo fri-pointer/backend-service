@@ -1,4 +1,4 @@
-package io.fri-pointer.lib;
+package io.fripointer.lib;
 
 import java.util.Date;
 
