@@ -128,8 +128,8 @@
             </activation>
             <distributionManagement>
                 <repository>
-                    <id>mjamsek-snapshots</id>
-                    <url>https://nexus.mjamsek.com/repository/maven-snapshots</url>
+                    <id>fri-pointer-snapshots</id>
+                    <url>https://nexus.mjamsek.com/repository/fri-pointer-snapshots/</url>
                 </repository>
             </distributionManagement>
         </profile>
@@ -137,8 +137,8 @@
             <id>release</id>
             <distributionManagement>
                 <repository>
-                    <id>mjamsek-releases</id>
-                    <url>https://nexus.mjamsek.com/repository/maven-releases</url>
+                    <id>fri-pointer-releases</id>
+                    <url>https://nexus.mjamsek.com/repository/fri-pointer-releases/</url>
                 </repository>
             </distributionManagement>
         </profile>
