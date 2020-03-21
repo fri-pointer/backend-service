@@ -16,16 +16,20 @@ cache:
   directories:
     - "$HOME/.m2"
 
+env:
+  global:
+    - DOCKER_IMAGE=docker.mjamsek.com/fri-pointer-backend-service:latest
+
 install: echo "Skipping installation"
 
 script:
   - mvn clean package -DskipTests=true --settings .ci/settings.xml
-  - docker build -t fri-pointer/backend-service .
+  - docker build -t $DOCKER_IMAGE .
 
 after_success:
   - mvn deploy -DskipTests=true --settings .ci/settings.xml -P !default,deploy-lib,snapshot
-#  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-#  - docker push fri-pointer/backend-service
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" docker.mjamsek.com
+  - docker push $DOCKER_IMAGE
 
 notifications:
   email: false
