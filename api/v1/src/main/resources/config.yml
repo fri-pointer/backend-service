@@ -40,3 +40,9 @@ kumuluzee:
       password: postgres
       pool:
         max-size: 20
+keycloak:
+  realm: fri-pointer
+  auth-server-url: https://keycloak.mjamsek.com
+  client-id: backend-service
+  auth:
+    client-secret: not_set
