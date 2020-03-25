@@ -59,6 +59,10 @@
             <groupId>com.mjamsek.rest</groupId>
             <artifactId>rest-utils</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.mjamsek.auth</groupId>
+            <artifactId>kumuluzee-keycloak-integration-lib</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
