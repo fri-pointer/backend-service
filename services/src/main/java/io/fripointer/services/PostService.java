@@ -1,14 +1,13 @@
 package io.fripointer.services;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
-import io.fripointer.persistence.PostEntity;
-
-import java.util.List;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.Post;
 
 public interface PostService {
-    List<PostEntity> getPosts(QueryParameters params);
-    PostEntity getPost(String postId);
-    PostEntity createPost(PostEntity post);
-    PostEntity updatePost(String postId, PostEntity post);
+    EntityList<Post> getPosts(QueryParameters params);
+    Post getPost(String postId);
+    Post createPost(Post post);
+    Post updatePost(String postId, Post post);
     void removePost(String postId);
 }

@@ -4,13 +4,14 @@ package io.fripointer.persistence;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "comment")
-public class CommentEntity {
+@Table(name = "comments")
+public class CommentEntity extends BaseEntity{
 
     @Column(name = "text")
     private String text;
 
-    // TODO: Relations to post, answer and question
+    @Column(name = "parent_id")
+    private String parentId;
 
     public String getText() {
         return text;
@@ -19,4 +20,5 @@ public class CommentEntity {
     public void setText(String text) {
         this.text = text;
     }
+
 }

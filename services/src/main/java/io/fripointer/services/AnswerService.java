@@ -1,14 +1,15 @@
 package io.fripointer.services;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.Answer;
 import io.fripointer.persistence.AnswerEntity;
-
-import java.util.List;
+;
 
 public interface AnswerService {
-    List<AnswerEntity> getAnswers(QueryParameters params);
-    AnswerEntity getAnswer(String answerId);
-    AnswerEntity createAnswer(AnswerEntity answer);
-    AnswerEntity updateAnswer(String answerId, AnswerEntity answer);
+    EntityList<Answer> getAnswers(QueryParameters params);
+    Answer getAnswer(String answerId);
+    Answer createAnswer(Answer answer);
+    Answer updateAnswer(String answerId, Answer answer);
     void removeAnswer(String answerId);
 }

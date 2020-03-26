@@ -1,61 +1,108 @@
 package io.fripointer.services.impl;
 
+import com.kumuluz.ee.logs.LogManager;
+import com.kumuluz.ee.logs.Logger;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.File;
+import io.fripointer.mappers.FileMapper;
 import io.fripointer.persistence.FileEntity;
 import io.fripointer.services.FileService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class FileServiceImpl implements FileService {
 
-    // TODO: Logging
+    private static final Logger log = LogManager.getLogger(FileServiceImpl.class.getName());
+
     // TODO: Custom exceptions (Not modified, entity required etc.)
 
     @PersistenceContext(unitName = "main-jpa-unit")
     private EntityManager em;
 
-    public List<FileEntity> getFiles(QueryParameters params) {
-        return JPAUtils.queryEntities(em, FileEntity.class, params);
+    @Override
+    public EntityList<File> getFiles(QueryParameters params) {
+        List<File> files = JPAUtils.queryEntities(em, FileEntity.class, params)
+                .stream()
+                .map(FileMapper::fromEntity)
+                .collect(Collectors.toList());
+        long count = JPAUtils.queryEntitiesCount(em, FileEntity.class, params);
+        return new EntityList<>(files, count);
     }
 
-    public FileEntity getFile(String fileId) {
+    @Override
+    public File getFile(String fileId) {
+        if(fileId == null)
+            return null;
+        return FileMapper.fromEntity(getFileEntity(fileId));
+    }
+
+    @Override
+    public File createFile(File file) {
+        if(file == null) {
+            log.info("File not created - input is null");
+            return null;
+        }
+
+        FileEntity fileEntity = FileMapper.toEntity(file);
+
+        em.getTransaction().begin();
+        em.persist(fileEntity);
+        em.getTransaction().commit();
+
+        log.info("File with id {} created", file.getId());
+
+        return FileMapper.fromEntity(fileEntity);
+    }
+
+    @Override
+    public File updateFile(String fileId, File file) {
+        if(file == null){
+            log.info("File not created - input is null");
+            return null;
+        }
+
+        FileEntity fileEntity = getFileEntity(fileId);
+        if(fileEntity == null) {
+            log.info("File with id {} not found", fileId);
+            return null;
+        }
+
+        try {
+            em.getTransaction().begin();
+            fileEntity.setName(file.getName());
+            fileEntity.setPath(file.getPath());
+            fileEntity.setFileType(file.getFileType());
+            em.getTransaction().commit();
+            log.info("File with id {} updated successfully", fileId);
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            log.info("Error while updating File with id {}", fileId);
+        }
+        return FileMapper.fromEntity(fileEntity);
+    }
+
+    @Override
+    public void removeFile(String fileId) {
+        FileEntity fileEntity = getFileEntity(fileId);
+        if(fileEntity != null) {
+            em.getTransaction().begin();
+            em.remove(fileEntity);
+            em.getTransaction().commit();
+            log.info("File with id {} removed", fileId);
+        }
+    }
+
+    private FileEntity getFileEntity(String fileId){
         if(fileId == null)
             return null;
         return em.find(FileEntity.class, fileId);
     }
 
-    @Transactional
-    public FileEntity createFile(FileEntity file) {
-        if(file == null)
-            return null;
-        em.persist(file);
-        return file;
-    }
-
-    @Transactional
-    public FileEntity updateFile(String fileId, FileEntity file) {
-        FileEntity f = getFile(fileId);
-        if(f == null || file == null)
-            return null;
-
-        file.setId(f.getId());
-
-        // TODO: DynamicUpdate
-
-        em.merge(file);
-        return file;
-    }
-
-    @Transactional
-    public void removeFile(String fileId) {
-        FileEntity file = getFile(fileId);
-        if(file != null)
-            em.remove(file);
-    }
 }

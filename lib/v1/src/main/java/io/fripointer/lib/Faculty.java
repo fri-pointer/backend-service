@@ -1,30 +1,14 @@
-package io.fripointer.persistence;
+package io.fripointer.lib;
 
-import javax.persistence.*;
 import java.util.List;
 
-@Entity
-@Table(name = "faculties")
-public class FacultyEntity extends BaseEntity {
+public class Faculty extends BaseType {
 
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "abbrevation")
     private String abbreviation;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "location")
     private String location;
-
-    @ManyToOne
-    @JoinColumn(name = "university_id")
-    private UniversityEntity university;
-
-    @OneToMany(mappedBy = "faculty")
-    private List<StudentProgramEntity> studentPrograms;
+    private List<StudentProgram> studentPrograms;
 
     public String getName() {
         return name;
@@ -58,19 +42,11 @@ public class FacultyEntity extends BaseEntity {
         this.location = location;
     }
 
-    public UniversityEntity getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(UniversityEntity university) {
-        this.university = university;
-    }
-
-    public List<StudentProgramEntity> getStudentPrograms() {
+    public List<StudentProgram> getStudentPrograms() {
         return studentPrograms;
     }
 
-    public void setStudentPrograms(List<StudentProgramEntity> studentPrograms) {
+    public void setStudentPrograms(List<StudentProgram> studentPrograms) {
         this.studentPrograms = studentPrograms;
     }
 }

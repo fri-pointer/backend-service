@@ -1,26 +1,11 @@
-package io.fripointer.persistence;
+package io.fripointer.lib;
 
-import javax.persistence.*;
+public class File extends BaseType {
 
-@Entity
-@Table(name = "files")
-public class FileEntity extends BaseEntity {
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "path")
     private String path;
-
-    @Column(name = "file_type")
     private String fileType;
-
-    @Column(name = "file_extension")
     private String fileExtension;
-
-    @ManyToOne
-    @JoinColumn(name = "shared_content_id")
-    private SharedContentEntity sharedContent;
 
     public String getName() {
         return name;
@@ -54,11 +39,4 @@ public class FileEntity extends BaseEntity {
         this.fileExtension = fileExtension;
     }
 
-    public SharedContentEntity getSharedContent() {
-        return sharedContent;
-    }
-
-    public void setSharedContent(SharedContentEntity sharedContent) {
-        this.sharedContent = sharedContent;
-    }
 }

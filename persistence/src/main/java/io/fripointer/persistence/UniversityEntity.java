@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import java.util.List;
 
 @Entity
-@Table(name = "university")
+@Table(name = "universities")
 public class UniversityEntity extends BaseEntity {
 
     @Column(name="name")
@@ -33,5 +33,13 @@ public class UniversityEntity extends BaseEntity {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public List<FacultyEntity> getFaculties() {
+        return faculties;
+    }
+
+    public void setFaculties(List<FacultyEntity> faculties) {
+        this.faculties = faculties;
     }
 }

@@ -1,11 +1,9 @@
 package io.fripointer.persistence;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table(name = "answer")
+@Table(name = "answers")
 public class AnswerEntity extends BaseEntity {
 
     @Column(name = "content")
@@ -14,7 +12,9 @@ public class AnswerEntity extends BaseEntity {
     @Column(name = "accepted")
     private Boolean accepted;
 
-    // TODO: FK -> question
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private QuestionEntity question;
 
     public String getContent() {
         return content;
@@ -30,5 +30,13 @@ public class AnswerEntity extends BaseEntity {
 
     public void setAccepted(Boolean accepted) {
         this.accepted = accepted;
+    }
+
+    public QuestionEntity getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(QuestionEntity question) {
+        this.question = question;
     }
 }

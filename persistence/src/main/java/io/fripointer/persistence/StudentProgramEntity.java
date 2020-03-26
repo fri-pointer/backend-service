@@ -4,14 +4,14 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="student_program")
+@Table(name="student_programs")
 public class StudentProgramEntity extends BaseEntity {
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "abbrevation")
-    private String abbrevation;
+    private String abbreviation;
 
     @Column(name = "description")
     private String description;
@@ -31,12 +31,12 @@ public class StudentProgramEntity extends BaseEntity {
         this.name = name;
     }
 
-    public String getAbbrevation() {
-        return abbrevation;
+    public String getAbbreviation() {
+        return abbreviation;
     }
 
-    public void setAbbrevation(String abbrevation) {
-        this.abbrevation = abbrevation;
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
     }
 
     public String getDescription() {
@@ -45,5 +45,21 @@ public class StudentProgramEntity extends BaseEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public FacultyEntity getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(FacultyEntity faculty) {
+        this.faculty = faculty;
+    }
+
+    public List<CourseEntity> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<CourseEntity> courses) {
+        this.courses = courses;
     }
 }

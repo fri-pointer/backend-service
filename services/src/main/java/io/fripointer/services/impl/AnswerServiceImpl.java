@@ -1,61 +1,108 @@
 package io.fripointer.services.impl;
 
+import com.kumuluz.ee.logs.LogManager;
+import com.kumuluz.ee.logs.Logger;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.Answer;
+import io.fripointer.mappers.AnswerMapper;
 import io.fripointer.persistence.AnswerEntity;
 import io.fripointer.services.AnswerService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class AnswerServiceImpl implements AnswerService {
 
-    // TODO: Logging
+    private static final Logger log = LogManager.getLogger(AnswerServiceImpl.class.getName());
+
     // TODO: Custom exceptions (Not modified, entity required etc.)
 
     @PersistenceContext(unitName = "main-jpa-unit")
     private EntityManager em;
 
-    public List<AnswerEntity> getAnswers(QueryParameters params) {
-        return JPAUtils.queryEntities(em, AnswerEntity.class, params);
+    @Override
+    public EntityList<Answer> getAnswers(QueryParameters params) {
+        List<Answer> answers = JPAUtils.queryEntities(em, AnswerEntity.class, params)
+                .stream()
+                .map(AnswerMapper::fromEntity)
+                .collect(Collectors.toList());
+        long count = JPAUtils.queryEntitiesCount(em, AnswerEntity.class, params);
+        return new EntityList<>(answers, count);
     }
 
-    public AnswerEntity getAnswer(String answerId) {
+    @Override
+    public Answer getAnswer(String answerId) {
+        AnswerEntity answerEntity = getAnswerEntity(answerId);
+        return AnswerMapper.fromEntity(answerEntity);
+    }
+
+    @Override
+    public Answer createAnswer(Answer answer) {
+
+        if(answer == null) {
+            log.info("Answer not created - input is null");
+            return null;
+        }
+
+        AnswerEntity answerEntity = AnswerMapper.toEntity(answer);
+
+        em.getTransaction().begin();
+        em.persist(answerEntity);
+        em.getTransaction().commit();
+
+        log.info("Answer with id {} created", answerEntity.getId());
+
+        return AnswerMapper.fromEntity(answerEntity);
+    }
+
+    @Override
+    public Answer updateAnswer(String answerId, Answer answer) {
+
+        if(answer == null){
+            log.info("Answer not created - input is null");
+            return null;
+        }
+
+        AnswerEntity answerEntity = getAnswerEntity(answerId);
+
+        if(answerEntity == null) {
+            log.info("Answer with id {} not found", answerId);
+            return null;
+        }
+
+        try {
+            em.getTransaction().begin();
+            answerEntity.setContent(answer.getContent());
+            answerEntity.setAccepted(answer.getAccepted());
+            em.getTransaction().commit();
+            log.info("Answer with id {} updated successfully", answerId);
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            log.info("Error while updating Answer with id {}", answerId);
+        }
+        return answer;
+    }
+
+    @Override
+    public void removeAnswer(String answerId) {
+        AnswerEntity answerEntity = getAnswerEntity(answerId);
+        if(answerEntity != null) {
+            em.getTransaction().begin();
+            em.remove(answerEntity);
+            em.getTransaction().commit();
+            log.info("Answer with id {} removed", answerId);
+        }
+    }
+
+    private AnswerEntity getAnswerEntity(String answerId){
         if(answerId == null)
             return null;
         return em.find(AnswerEntity.class, answerId);
-    }
-
-    @Transactional
-    public AnswerEntity createAnswer(AnswerEntity answer) {
-        if(answer == null)
-            return null;
-        em.persist(answer);
-        return answer;
-    }
-
-    @Transactional
-    public AnswerEntity updateAnswer(String answerId, AnswerEntity answer) {
-        AnswerEntity a = getAnswer(answerId);
-        if(a == null || answer == null)
-            return null;
-
-        answer.setId(a.getId());
-
-        // TODO: Dynamic update
-
-        em.merge(answer);
-        return answer;
-    }
-
-    @Transactional
-    public void removeAnswer(String answerId) {
-        AnswerEntity answer = getAnswer(answerId);
-        if(answer != null)
-            em.remove(answer);
     }
 }

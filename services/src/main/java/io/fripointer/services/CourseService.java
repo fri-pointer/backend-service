@@ -1,14 +1,14 @@
 package io.fripointer.services;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.Course;
 import io.fripointer.persistence.CourseEntity;
 
-import java.util.List;
-
 public interface CourseService {
-    List<CourseEntity> getCourses(QueryParameters params);
-    CourseEntity getCourse(String courseId);
-    CourseEntity createCourse(CourseEntity course);
-    CourseEntity updateCourse(String courseId, CourseEntity course);
+    EntityList<Course> getCourses(QueryParameters params);
+    Course getCourse(String courseId);
+    Course createCourse(Course course);
+    Course updateCourse(String courseId, Course course);
     void removeCourse(String courseId);
 }

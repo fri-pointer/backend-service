@@ -8,7 +8,6 @@ import io.fripointer.services.CommentService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
@@ -20,17 +19,19 @@ public class CommentServiceImpl implements CommentService {
     @PersistenceContext(unitName = "main-jpa-unit")
     private EntityManager em;
 
+    @Override
     public List<CommentEntity> getComments(QueryParameters params) {
         return JPAUtils.queryEntities(em, CommentEntity.class, params);
     }
 
+    @Override
     public CommentEntity getComment(String commentId) {
         if(commentId == null)
             return null;
         return em.find(CommentEntity.class, commentId);
     }
 
-    @Transactional
+    @Override
     public CommentEntity createComment(CommentEntity comment) {
         if (comment == null)
             return null;
@@ -39,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-    @Transactional
+    @Override
     public CommentEntity updateComment(String commentId, CommentEntity comment) {
         CommentEntity c = getComment(commentId);
         if (c == null || comment == null)
@@ -52,7 +53,7 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
 
-    @Transactional
+    @Override
     public void removeComment(String commentId) {
         CommentEntity comment = getComment(commentId);
         if(comment != null)

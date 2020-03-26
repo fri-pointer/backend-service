@@ -4,7 +4,7 @@ package io.fripointer.persistence;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "post")
+@Table(name = "posts")
 public class PostEntity extends BaseEntity {
 
     @Column(name = "title")
@@ -32,5 +32,13 @@ public class PostEntity extends BaseEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public CourseEntity getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseEntity course) {
+        this.course = course;
     }
 }

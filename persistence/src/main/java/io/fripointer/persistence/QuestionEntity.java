@@ -2,9 +2,10 @@ package io.fripointer.persistence;
 
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "question")
+@Table(name = "questions")
 public class QuestionEntity extends BaseEntity {
 
     @Column(name = "title")
@@ -17,6 +18,8 @@ public class QuestionEntity extends BaseEntity {
     @JoinColumn(name = "course_id")
     private CourseEntity course;
 
+    @OneToMany(mappedBy = "question")
+    private List<AnswerEntity> answers;
 
     public String getTitle() {
         return title;
@@ -32,5 +35,21 @@ public class QuestionEntity extends BaseEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public CourseEntity getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseEntity course) {
+        this.course = course;
+    }
+
+    public List<AnswerEntity> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<AnswerEntity> answers) {
+        this.answers = answers;
     }
 }

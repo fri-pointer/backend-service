@@ -1,14 +1,13 @@
 package io.fripointer.services;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
-import io.fripointer.persistence.UniversityEntity;
-
-import java.util.List;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.University;
 
 public interface UniversityService {
-    List<UniversityEntity> getUniversities(QueryParameters params);
-    UniversityEntity getUniversity(String universityId);
-    UniversityEntity createUniversity(UniversityEntity university);
-    UniversityEntity updateUniversity(String universityId, UniversityEntity university);
+    EntityList<University> getUniversities(QueryParameters params);
+    University getUniversity(String universityId);
+    University createUniversity(University university);
+    University updateUniversity(String universityId, University university);
     void removeUniversity(String universityId);
 }

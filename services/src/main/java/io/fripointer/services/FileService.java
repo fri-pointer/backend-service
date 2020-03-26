@@ -1,14 +1,13 @@
 package io.fripointer.services;
 
 import com.kumuluz.ee.rest.beans.QueryParameters;
-import io.fripointer.persistence.FileEntity;
-
-import java.util.List;
+import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.File;
 
 public interface FileService {
-    List<FileEntity> getFiles(QueryParameters params);
-    FileEntity getFile(String fileId);
-    FileEntity createFile(FileEntity file);
-    FileEntity updateFile(String fileId, FileEntity file);
+    EntityList<File> getFiles(QueryParameters params);
+    File getFile(String fileId);
+    File createFile(File file);
+    File updateFile(String fileId, File file);
     void removeFile(String fileId);
 }
