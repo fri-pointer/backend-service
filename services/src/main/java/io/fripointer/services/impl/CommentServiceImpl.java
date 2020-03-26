@@ -13,6 +13,7 @@ import io.fripointer.services.CommentService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,20 @@ public class CommentServiceImpl implements CommentService {
 
     @PersistenceContext(unitName = "main-jpa-unit")
     private EntityManager em;
+
+    @Override
+    public EntityList<Comment> getCommentsByParentId(String parentId, QueryParameters params) {
+        TypedQuery<CommentEntity> query = em.createNamedQuery(CommentEntity.FIND_BY_PARENT_ID, CommentEntity.class);
+        query.setParameter("parentId", parentId);
+
+        List<Comment> comments = query.getResultStream()
+                .map(CommentMapper::fromEntity)
+                .collect(Collectors.toList());
+
+        long count = comments.size();
+
+        return new EntityList<>(comments, count);
+    }
 
     @Override
     public EntityList<Comment> getComments(QueryParameters params) {

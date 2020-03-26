@@ -6,6 +6,7 @@ import io.fripointer.lib.Comment;
 
 public interface CommentService {
     EntityList<Comment> getComments(QueryParameters params);
+    EntityList<Comment> getCommentsByParentId(String parentId, QueryParameters params);
     Comment getComment(String commentId);
     Comment createComment(Comment comment);
     Comment updateComment(String commentId, Comment comment);
