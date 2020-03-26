@@ -38,8 +38,9 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public Answer getAnswer(String answerId) {
-        AnswerEntity answerEntity = getAnswerEntity(answerId);
-        return AnswerMapper.fromEntity(answerEntity);
+        if(answerId == null)
+            return null;
+        return AnswerMapper.fromEntity(getAnswerEntity(answerId));
     }
 
     @Override
