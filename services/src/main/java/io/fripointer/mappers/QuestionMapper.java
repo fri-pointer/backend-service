@@ -3,6 +3,9 @@ package io.fripointer.mappers;
 import io.fripointer.lib.Question;
 import io.fripointer.persistence.QuestionEntity;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 public class QuestionMapper {
 
     public static Question fromEntity(QuestionEntity questionEntity){
@@ -11,6 +14,21 @@ public class QuestionMapper {
         question.setTimestamp(questionEntity.getTimestamp());
         question.setTitle(questionEntity.getTitle());
         question.setContent(questionEntity.getContent());
+        return question;
+    }
+
+    public static Question fromEntityDetailed(QuestionEntity questionEntity){
+        Question question = fromEntity(questionEntity);
+
+        if(questionEntity.getAnswers() != null) {
+            question.setAnswers(questionEntity.getAnswers()
+                    .stream()
+                    .map(AnswerMapper::fromEntity)
+                    .collect(Collectors.toList()));
+        } else {
+            question.setAnswers(new ArrayList<>());
+        }
+
         return question;
     }
 
