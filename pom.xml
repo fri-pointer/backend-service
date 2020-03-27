@@ -130,6 +130,7 @@
                 <module>lib</module>
                 <module>services</module>
                 <module>persistence</module>
+                <module>integrations</module>
             </modules>
         </profile>
 
