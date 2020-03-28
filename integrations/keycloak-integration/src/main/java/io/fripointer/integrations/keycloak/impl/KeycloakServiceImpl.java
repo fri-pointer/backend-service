@@ -6,6 +6,7 @@ import com.mjamsek.rest.dto.EntityList;
 import com.mjamsek.rest.exceptions.NotFoundException;
 import io.fripointer.integrations.keycloak.KeycloakService;
 import io.fripointer.integrations.keycloak.apis.KeycloakApi;
+import io.fripointer.integrations.keycloak.apis.ForbiddenMapper;
 import io.fripointer.integrations.keycloak.apis.NotFoundMapper;
 import io.fripointer.integrations.keycloak.apis.Query;
 import io.fripointer.integrations.keycloak.lib.User;
@@ -33,6 +34,7 @@ public class KeycloakServiceImpl implements KeycloakService {
             .newBuilder()
             .baseUri(URI.create(keycloakUrl))
             .register(NotFoundMapper.class)
+            .register(ForbiddenMapper.class)
             .build(KeycloakApi.class);
     }
     
@@ -45,11 +47,8 @@ public class KeycloakServiceImpl implements KeycloakService {
         queryBean.setLimit(limit);
         queryBean.setOffset(offset);
         
-        List<User> users = KeycloakClient
-            .callKeycloak(token -> keycloakApi.getUsers(this.realm, queryBean, "Bearer " + token));
-        
-        int userCount = KeycloakClient
-            .callKeycloak(token -> keycloakApi.getUsersCount(this.realm, queryBean, "Bearer " + token));
+        List<User> users = keycloakApi.getUsers(this.realm, queryBean);
+        int userCount = keycloakApi.getUsersCount(this.realm, queryBean);
         
         return new EntityList<>(users, userCount);
     }
@@ -57,8 +56,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     @Override
     public Optional<User> getUser(String userId) {
         try {
-            User user = KeycloakClient
-                .callKeycloak(token -> keycloakApi.getUser(this.realm, userId, "Bearer " + token));
+            User user = keycloakApi.getUser(this.realm, userId);
             return Optional.of(user);
         } catch (NotFoundException e) {
             return Optional.empty();
@@ -67,12 +65,23 @@ public class KeycloakServiceImpl implements KeycloakService {
     
     @Override
     public void createUser(User user) {
-        // TODO:
+        keycloakApi.createUser(this.realm, user);
     }
     
     @Override
     public void updateUser(User user, String userId) {
-        // TODO:
+        
+        getUser(userId).ifPresent(existingUser -> {
+            
+            updateUserFields(existingUser, user);
+    
+            try {
+                KeycloakClient
+                    .callKeycloak(token -> keycloakApi.updateUser(this.realm, userId, existingUser));
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
     
     @Override
@@ -81,5 +90,11 @@ public class KeycloakServiceImpl implements KeycloakService {
             user.setEnabled(false);
             updateUser(user, userId);
         });
+    }
+    
+    private void updateUserFields(User existingUser, User newValue) {
+        
+        existingUser.setEnabled(newValue.isEnabled());
+        // TODO:
     }
 }

@@ -1,6 +1,8 @@
 package io.fripointer.integrations.keycloak.apis;
 
+import com.mjamsek.auth.keycloak.client.KeycloakClient;
 import io.fripointer.integrations.keycloak.lib.User;
+import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -12,45 +14,49 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface KeycloakApi {
     
+    default String getAuthorizationHeader() {
+        return "Bearer " + KeycloakClient.getServiceToken();
+    }
+    
     @POST
-    @Path("/admin/{realm}/users")
+    @Path("/admin/realms/{realm}/users")
+    @ClientHeaderParam(name = HttpHeaders.AUTHORIZATION, value = "{getAuthorizationHeader}")
     Response createUser(
         @PathParam("realm") String realm,
-        @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
         User user
     );
     
     @PUT
-    @Path("/admin/{realm}/users/{userId}")
+    @Path("/admin/realms/{realm}/users/{userId}")
+    @ClientHeaderParam(name = HttpHeaders.AUTHORIZATION, value = "{getAuthorizationHeader}")
     Response updateUser(
         @PathParam("realm") String realm,
         @PathParam("userId") String userId,
-        @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
         User user
     );
     
     @GET
-    @Path("/admin/{realm}/users")
+    @Path("/admin/realms/{realm}/users")
+    @ClientHeaderParam(name = HttpHeaders.AUTHORIZATION, value = "{getAuthorizationHeader}")
     List<User> getUsers(
         @PathParam("realm") String realm,
-        @BeanParam Query query,
-        @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader
+        @BeanParam Query query
     );
     
     @GET
-    @Path("/admin/{realm}/users/count")
+    @Path("/admin/realms/{realm}/users/count")
+    @ClientHeaderParam(name = HttpHeaders.AUTHORIZATION, value = "{getAuthorizationHeader}")
     int getUsersCount(
         @PathParam("realm") String realm,
-        @BeanParam Query query,
-        @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader
+        @BeanParam Query query
     );
     
     @GET
-    @Path("/admin/{realm}/users/{userId}")
+    @Path("/admin/realms/{realm}/users/{userId}")
+    @ClientHeaderParam(name = HttpHeaders.AUTHORIZATION, value = "{getAuthorizationHeader}")
     User getUser(
         @PathParam("realm") String realm,
-        @PathParam("userId") String userId,
-        @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader
+        @PathParam("userId") String userId
     );
     
 }

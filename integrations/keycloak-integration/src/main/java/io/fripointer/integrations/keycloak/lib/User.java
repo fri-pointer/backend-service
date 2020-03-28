@@ -1,6 +1,5 @@
 package io.fripointer.integrations.keycloak.lib;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,7 @@ public class User {
     
     private Map<String, Object> clientRoles;
     
-    private Date createdTimestamp;
+    private String createdTimestamp;
     
     private List<UserCredentials> credentials;
     
@@ -52,11 +51,11 @@ public class User {
         this.clientRoles = clientRoles;
     }
     
-    public Date getCreatedTimestamp() {
+    public String getCreatedTimestamp() {
         return createdTimestamp;
     }
     
-    public void setCreatedTimestamp(Date createdTimestamp) {
+    public void setCreatedTimestamp(String createdTimestamp) {
         this.createdTimestamp = createdTimestamp;
     }
     
