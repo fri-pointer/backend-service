@@ -3,6 +3,7 @@ package io.fripointer.api.resources;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.mjamsek.rest.common.HttpHeaders;
 import com.mjamsek.rest.dto.EntityList;
+import io.fripointer.lib.Comment;
 import io.fripointer.lib.SharedContent;
 import io.fripointer.services.CommentService;
 import io.fripointer.services.SharedContentService;
@@ -112,13 +113,102 @@ public class SharedContentResource {
             summary = "Deletes shared content.",
             tags = "sharedContent",
             responses = {
-                    @ApiResponse(responseCode = "204",
-                            description = "Shared content deleted.",
-                            content = @Content(schema = @Schema(implementation = SharedContent.class)))
+                    @ApiResponse(responseCode = "204", description = "Shared content deleted.")
             })
     @Path("{id}")
     public Response deleteSharedContent(@PathParam("id") String id){
         sharedContentService.removeSharedContent(id);
+        return Response.noContent().build();
+    }
+
+
+    /*
+     * ************ COMMENTS ************
+     */
+
+    @GET
+    @Operation(description = "Returns list of all comments of certain sharedContent.",
+            summary = "Returns list of sharedContent's comments.",
+            tags = "sharedContent",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "List of comments returned successfully.",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = Comment.class))))
+            })
+    @Path("/{sharedContentId}/comments")
+    public Response getCommentsBySharedContentsId(@PathParam("sharedContentId") String parentId){
+        QueryParameters queryParameters = QueryParameters.query(uriInfo.getRequestUri().getQuery()).build();
+        EntityList<Comment> comments = commentService.getCommentsByParentId(parentId, queryParameters);
+        return Response
+                .ok(comments.getEntityList())
+                .header(HttpHeaders.X_TOTAL_COUNT, comments.getCount())
+                .build();
+    }
+
+
+    @GET
+    @Operation(description = "Returns comment according to given sharedContent id and comment id.",
+            summary = "Returns comment.",
+            tags = "sharedContent",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Comment returned successfully.",
+                            content = @Content(schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "404",
+                            description = "Requested comment not found.")
+            })
+    @Path("/{sharedContentId}/comments/{comment_id}")
+    public Response getCommentsBySharedContentId(@PathParam("sharedContentId") String parentId, @PathParam("comment_id") String commentId){
+        Comment comment = commentService.getComment(parentId, commentId);
+        return Response.ok(comment).build();
+    }
+
+
+    @POST
+    @Operation(description = "Creates new comment for given sharedContent.",
+            summary = "Creates new comment.",
+            tags = "sharedContent",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Newly created comment returned successfully.",
+                            content = @Content(schema = @Schema(implementation = Comment.class)))
+            })
+    @Path("{sharedContentId}/comments")
+    public Response createSharedContentComment(@PathParam("sharedContentId") String parentId, Comment comment){
+        Comment newComment = commentService.createComment(parentId, comment);
+        return Response
+                .created(URI.create("/sharedContents/" + parentId + "/comments/" + comment.getId()))
+                .entity(newComment)
+                .build();
+    }
+
+
+    @PUT
+    @Operation(description = "Updates existing comment for given sharedContent.",
+            summary = "Updates comment.",
+            tags = "sharedContent",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Comment successfully updated.",
+                            content = @Content(schema = @Schema(implementation = Comment.class)))
+            })
+    @Path("{sharedContentId}/comments/{commentId}")
+    public Response updateSharedContentComment(@PathParam("sharedContentId") String parentId, @PathParam("commentId") String commentId, Comment comment){
+        Comment updatedComment = commentService.updateComment(parentId, commentId, comment);
+        return Response.ok(updatedComment).build();
+    }
+
+
+    @DELETE
+    @Operation(description = "Deletes sharedContent's comment.",
+            summary = "Deletes comment.",
+            tags = "sharedContent",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Comment deleted.")
+            })
+    @Path("{sharedContentId}/comments/{commentId}")
+    public Response deleteSharedContentComment(@PathParam("sharedContentId") String parentId, @PathParam("commentId") String commentId){
+        commentService.removeComment(parentId, commentId);
         return Response.noContent().build();
     }
 

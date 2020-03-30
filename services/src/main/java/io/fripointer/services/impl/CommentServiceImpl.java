@@ -52,14 +52,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment getComment(String commentId) {
-        if(commentId == null)
+    public Comment getComment(String parentId, String commentId) {
+        if(commentId == null || parentId == null)
             return null;
-        return CommentMapper.fromEntity(getCommentEntity(commentId));
+        return CommentMapper.fromEntity(getCommentEntityByParentId(parentId, commentId));
     }
 
     @Override
-    public Comment createComment(Comment comment) {
+    public Comment createComment(String parentId, Comment comment) {
 
         if(comment == null) {
             log.info("Comment not created - input is null");
@@ -68,6 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
         // TODO: Handle incorrect parent_id
         CommentEntity commentEntity = CommentMapper.toEntity(comment);
+        commentEntity.setParentId(parentId);
 
         em.getTransaction().begin();
         em.persist(commentEntity);
@@ -80,13 +81,13 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public Comment updateComment(String commentId, Comment comment) {
+    public Comment updateComment(String parentId, String commentId, Comment comment) {
         if(comment == null){
             log.info("Comment not created - input is null");
             return null;
         }
 
-        CommentEntity commentEntity = getCommentEntity(commentId);
+        CommentEntity commentEntity = getCommentEntityByParentId(parentId, commentId);
 
         if(commentEntity == null) {
             log.info("Comment with id {} not found", commentId);
@@ -107,8 +108,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void removeComment(String commentId) {
-        CommentEntity commentEntity = getCommentEntity(commentId);
+    public void removeComment(String parentId, String commentId) {
+        CommentEntity commentEntity = getCommentEntityByParentId(parentId, commentId);
         if(commentEntity != null) {
             em.getTransaction().begin();
             em.remove(commentEntity);
@@ -117,9 +118,11 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    public CommentEntity getCommentEntity(String commentId) {
-        if(commentId == null)
+    public CommentEntity getCommentEntityByParentId(String parentId, String commentId) {
+        if(commentId == null || parentId == null)
             return null;
-        return em.find(CommentEntity.class, commentId);
+        return (CommentEntity) em.createNamedQuery(CommentEntity.FIND_BY_PARENT_ID_AND_COMMENT_ID)
+                .setParameter("parentId", parentId)
+                .setParameter("commentId", commentId).getSingleResult();
     }
 }

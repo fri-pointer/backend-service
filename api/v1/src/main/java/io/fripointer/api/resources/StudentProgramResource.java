@@ -108,9 +108,7 @@ public class StudentProgramResource {
             summary = "Deletes student program.",
             tags = "studentProgram",
             responses = {
-                    @ApiResponse(responseCode = "204",
-                            description = "Student program deleted.",
-                            content = @Content(schema = @Schema(implementation = StudentProgram.class)))
+                    @ApiResponse(responseCode = "204", description = "Student program deleted.")
             })
     @Path("{id}")
     public Response deleteStudentProgram(@PathParam("id") String id){

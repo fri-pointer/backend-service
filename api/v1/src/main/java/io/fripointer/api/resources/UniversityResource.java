@@ -108,9 +108,7 @@ public class UniversityResource {
             summary = "Deletes university.",
             tags = "university",
             responses = {
-                    @ApiResponse(responseCode = "204",
-                            description = "University deleted.",
-                            content = @Content(schema = @Schema(implementation = University.class)))
+                    @ApiResponse(responseCode = "204", description = "University deleted.")
             })
     @Path("{id}")
     public Response deleteUniversity(@PathParam("id") String id){

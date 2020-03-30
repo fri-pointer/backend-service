@@ -4,6 +4,7 @@ import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.mjamsek.rest.common.HttpHeaders;
 import com.mjamsek.rest.dto.EntityList;
 import io.fripointer.lib.Answer;
+import io.fripointer.lib.Comment;
 import io.fripointer.services.AnswerService;
 import io.fripointer.services.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -112,13 +113,101 @@ public class AnswerResource {
             summary = "Deletes answer.",
             tags = "answer",
             responses = {
-                    @ApiResponse(responseCode = "204",
-                            description = "Answer deleted.",
-                            content = @Content(schema = @Schema(implementation = Answer.class)))
+                    @ApiResponse(responseCode = "204", description = "Answer deleted.")
             })
     @Path("{id}")
     public Response deleteAnswer(@PathParam("id") String id){
         answerService.removeAnswer(id);
+        return Response.noContent().build();
+    }
+
+    /*
+     * ************ COMMENTS ************
+     */
+
+    @GET
+    @Operation(description = "Returns list of all comments of certain answer.",
+            summary = "Returns list of answer's comments.",
+            tags = "answer",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "List of comments returned successfully.",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = Comment.class))))
+            })
+    @Path("/{answerId}/comments")
+    public Response getCommentsByAnswersId(@PathParam("answerId") String parentId){
+        QueryParameters queryParameters = QueryParameters.query(uriInfo.getRequestUri().getQuery()).build();
+        EntityList<Comment> comments = commentService.getCommentsByParentId(parentId, queryParameters);
+        return Response
+                .ok(comments.getEntityList())
+                .header(HttpHeaders.X_TOTAL_COUNT, comments.getCount())
+                .build();
+    }
+
+
+    @GET
+    @Operation(description = "Returns comment according to given answer id and comment id.",
+            summary = "Returns comment.",
+            tags = "answer",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Comment returned successfully.",
+                            content = @Content(schema = @Schema(implementation = Comment.class))),
+                    @ApiResponse(responseCode = "404",
+                            description = "Requested comment not found.")
+            })
+    @Path("/{answerId}/comments/{comment_id}")
+    public Response getCommentsByAnswerId(@PathParam("answerId") String parentId, @PathParam("comment_id") String commentId){
+        Comment comment = commentService.getComment(parentId, commentId);
+        return Response.ok(comment).build();
+    }
+
+
+    @POST
+    @Operation(description = "Creates new comment for given answer.",
+            summary = "Creates new comment.",
+            tags = "answer",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Newly created comment returned successfully.",
+                            content = @Content(schema = @Schema(implementation = Comment.class)))
+            })
+    @Path("{answerId}/comments")
+    public Response createAnswerComment(@PathParam("answerId") String parentId, Comment comment){
+        Comment newComment = commentService.createComment(parentId, comment);
+        return Response
+                .created(URI.create("/answers/" + parentId + "/comments/" + comment.getId()))
+                .entity(newComment)
+                .build();
+    }
+
+
+    @PUT
+    @Operation(description = "Updates existing comment for given answer.",
+            summary = "Updates comment.",
+            tags = "answer",
+            responses = {
+                    @ApiResponse(responseCode = "200",
+                            description = "Comment successfully updated.",
+                            content = @Content(schema = @Schema(implementation = Comment.class)))
+            })
+    @Path("{answerId}/comments/{commentId}")
+    public Response updateAnswerComment(@PathParam("answerId") String parentId, @PathParam("commentId") String commentId, Comment comment){
+        Comment updatedComment = commentService.updateComment(parentId, commentId, comment);
+        return Response.ok(updatedComment).build();
+    }
+
+
+    @DELETE
+    @Operation(description = "Deletes answer's comment.",
+            summary = "Deletes comment.",
+            tags = "answer",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Comment deleted.")
+            })
+    @Path("{answerId}/comments/{commentId}")
+    public Response deleteAnswerComment(@PathParam("answerId") String parentId, @PathParam("commentId") String commentId){
+        commentService.removeComment(parentId, commentId);
         return Response.noContent().build();
     }
 

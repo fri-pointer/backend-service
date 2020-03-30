@@ -108,9 +108,7 @@ public class CourseResource {
             summary = "Deletes course.",
             tags = "course",
             responses = {
-                    @ApiResponse(responseCode = "204",
-                            description = "Course deleted.",
-                            content = @Content(schema = @Schema(implementation = Course.class)))
+                    @ApiResponse(responseCode = "204", description = "Course deleted.")
             })
     @Path("{id}")
     public Response deleteCourse(@PathParam("id") String id){

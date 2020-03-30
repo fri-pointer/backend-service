@@ -108,9 +108,7 @@ public class FileResource {
             summary = "Deletes file.",
             tags = "file",
             responses = {
-                    @ApiResponse(responseCode = "204",
-                            description = "File deleted.",
-                            content = @Content(schema = @Schema(implementation = File.class)))
+                    @ApiResponse(responseCode = "204", description = "File deleted.")
             })
     @Path("{id}")
     public Response deleteFile(@PathParam("id") String id){
