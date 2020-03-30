@@ -21,6 +21,10 @@
             <groupId>io.fripointer</groupId>
             <artifactId>backend-service-lib-v1</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.fripointer</groupId>
+            <artifactId>keycloak-integration</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.kumuluz.ee</groupId>

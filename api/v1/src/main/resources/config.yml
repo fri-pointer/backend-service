@@ -42,7 +42,7 @@ kumuluzee:
         max-size: 20
 keycloak:
   realm: fri-pointer
-  auth-server-url: https://keycloak.mjamsek.com
+  auth-server-url: https://keycloak.mjamsek.com/auth
   client-id: backend-service
   auth:
     client-secret: not_set
