@@ -26,7 +26,7 @@ import java.net.URI;
 @RequestScoped
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class PostSerivce {
+public class PostResource {
 
     // TODO: Define returned exceptions
 
