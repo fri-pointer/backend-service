@@ -1,6 +1,5 @@
 package io.fripointer.api;
 
-import io.fripointer.api.endpoints.TestEndpoint;
 import io.fripointer.api.mappers.RestExceptionMapper;
 import io.fripointer.api.resources.*;
 
@@ -17,8 +16,6 @@ public class RestService extends Application {
         Set<Class<?>> classes = new HashSet<>();
         
         // Resources
-        classes.add(TestEndpoint.class);
-
         classes.add(AnswerResource.class);
         classes.add(CommentResource.class);
         classes.add(CourseResource.class);
