@@ -11,8 +11,7 @@ import io.fripointer.persistence.FileEntity;
 import io.fripointer.services.FileService;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,8 +76,8 @@ public class FileServiceImpl implements FileService {
         try {
             em.getTransaction().begin();
             fileEntity.setName(file.getName());
-            fileEntity.setPath(file.getPath());
-            fileEntity.setFileType(file.getFileType());
+            fileEntity.setLocation(file.getLocation());
+            fileEntity.setMimeType(file.getMimeType());
             em.getTransaction().commit();
             log.info("File with id {} updated successfully", fileId);
         } catch (Exception e) {
@@ -98,7 +97,47 @@ public class FileServiceImpl implements FileService {
             log.info("File with id {} removed", fileId);
         }
     }
-
+    
+    @Override
+    public void createFileStub(File file) {
+        
+        FileEntity entity = new FileEntity();
+        entity.setUploaded(false);
+        entity.setMimeType(file.getMimeType());
+        entity.setFileExtension(file.getFileExtension());
+        entity.setName(file.getName());
+        entity.setLocation(file.getLocation());
+        
+        try {
+            em.getTransaction().begin();
+            em.persist(entity);
+            em.getTransaction().commit();
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+            em.getTransaction().rollback();
+        }
+    }
+    
+    @Override
+    public void finalizeFile(String fileKey) {
+        TypedQuery<FileEntity> query = em.createNamedQuery(FileEntity.FIND_BY_NAME, FileEntity.class);
+        query.setParameter("name", fileKey);
+        try {
+            FileEntity entity = query.getSingleResult();
+            entity.setUploaded(true);
+            try {
+                em.getTransaction().begin();
+                em.merge(entity);
+                em.getTransaction().commit();
+            } catch (PersistenceException e) {
+                e.printStackTrace();
+                em.getTransaction().rollback();
+            }
+        } catch (NoResultException ignored) {
+            // If no match found, ignore callback
+        }
+    }
+    
     private FileEntity getFileEntity(String fileId){
         if(fileId == null)
             return null;

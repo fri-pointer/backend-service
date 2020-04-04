@@ -49,6 +49,7 @@ keycloak:
 upload:
   s3:
     bucket: fri-pointer-data
-    endpoint: https://fri-pointer-data.s3-accelerate.amazonaws.com
+    upload-endpoint: https://fri-pointer-data.s3-accelerate.amazonaws.com
+    public-endpoint: https://fri-pointer-data.s3.eu-central-1.amazonaws.com
     access-key-id: not_set
     secret-access-key: not_set

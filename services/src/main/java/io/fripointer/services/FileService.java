@@ -10,4 +10,7 @@ public interface FileService {
     File createFile(File file);
     File updateFile(String fileId, File file);
     void removeFile(String fileId);
+    
+    void createFileStub(File file);
+    void finalizeFile(String fileKey);
 }

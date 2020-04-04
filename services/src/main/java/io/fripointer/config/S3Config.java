@@ -12,8 +12,11 @@ public class S3Config {
     @ConfigValue("bucket")
     private String bucket;
     
-    @ConfigValue("endpoint")
-    private String endpoint;
+    @ConfigValue("upload-endpoint")
+    private String uploadEndpoint;
+    
+    @ConfigValue("public-endpoint")
+    private String publicEndpoint;
     
     @ConfigValue("access-key-id")
     private String accessKeyId;
@@ -29,12 +32,12 @@ public class S3Config {
         this.bucket = bucket;
     }
     
-    public String getEndpoint() {
-        return endpoint;
+    public String getUploadEndpoint() {
+        return uploadEndpoint;
     }
     
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+    public void setUploadEndpoint(String uploadEndpoint) {
+        this.uploadEndpoint = uploadEndpoint;
     }
     
     public String getAccessKeyId() {
@@ -51,5 +54,13 @@ public class S3Config {
     
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+    
+    public String getPublicEndpoint() {
+        return publicEndpoint;
+    }
+    
+    public void setPublicEndpoint(String publicEndpoint) {
+        this.publicEndpoint = publicEndpoint;
     }
 }

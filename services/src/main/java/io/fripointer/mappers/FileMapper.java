@@ -10,16 +10,16 @@ public class FileMapper {
         file.setId(fileEntity.getId());
         file.setTimestamp(fileEntity.getTimestamp());
         file.setName(fileEntity.getName());
-        file.setPath(fileEntity.getPath());
-        file.setFileType(fileEntity.getFileType());
+        file.setLocation(fileEntity.getLocation());
+        file.setMimeType(fileEntity.getMimeType());
         return file;
     }
 
     public static FileEntity toEntity(File file){
         FileEntity fileEntity = new FileEntity();
         fileEntity.setName(file.getName());
-        fileEntity.setPath(file.getPath());
-        fileEntity.setFileType(file.getFileType());
+        fileEntity.setLocation(file.getLocation());
+        fileEntity.setMimeType(file.getMimeType());
         return fileEntity;
     }
 

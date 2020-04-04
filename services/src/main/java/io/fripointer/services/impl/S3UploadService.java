@@ -3,9 +3,12 @@ package io.fripointer.services.impl;
 import com.kumuluz.ee.logs.LogManager;
 import com.kumuluz.ee.logs.Logger;
 import io.fripointer.config.S3Config;
+import io.fripointer.lib.File;
 import io.fripointer.lib.dto.UploadSignature;
 import io.fripointer.lib.dto.UploadSignatureRequest;
+import io.fripointer.services.FileService;
 import io.fripointer.services.UploadService;
+import io.fripointer.utils.FileUtil;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -36,6 +39,9 @@ public class S3UploadService implements UploadService {
     @Inject
     private S3Config s3Config;
     
+    @Inject
+    private FileService fileService;
+    
     private S3Presigner s3Presigner;
     
     @PostConstruct
@@ -51,7 +57,7 @@ public class S3UploadService implements UploadService {
         this.s3Presigner = S3Presigner
             .builder()
             .region(Region.EU_CENTRAL_1)
-            .endpointOverride(URI.create(s3Config.getEndpoint()))
+            .endpointOverride(URI.create(s3Config.getUploadEndpoint()))
             .serviceConfiguration(conf)
             .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
             .build();
@@ -64,6 +70,8 @@ public class S3UploadService implements UploadService {
         
         String key = timestamp.getTime() + "-" + signatureRequest.getFilename();
         String contentType = signatureRequest.getContentType();
+        
+        createFileStub(key, contentType);
         
         LOG.info("Generating presign request for file '{}' of type '{}'", key, contentType);
         
@@ -95,6 +103,20 @@ public class S3UploadService implements UploadService {
         requiredHeaders.put(HttpHeaders.CONTENT_TYPE, contentType);
         response.setRequiredHeaders(requiredHeaders);
         
+        // TODO: save to DB publicEndpoint + / + key
+        
         return response;
+    }
+    
+    private void createFileStub(String key, String contentType) {
+        File file = new File();
+        file.setName(key);
+        file.setFileExtension(FileUtil.getFileExtension(key));
+        
+        String location = s3Config.getPublicEndpoint() + "/" + key;
+        file.setLocation(location);
+        file.setMimeType(contentType);
+        
+        fileService.createFileStub(file);
     }
 }
