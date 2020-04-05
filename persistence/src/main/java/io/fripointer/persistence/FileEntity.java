@@ -5,11 +5,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "files")
 @NamedQueries({
-    @NamedQuery(name = FileEntity.FIND_BY_NAME, query = "SELECT f FROM FileEntity f WHERE f.name = :name")
+    @NamedQuery(name = FileEntity.FIND_BY_KEY, query = "SELECT f FROM FileEntity f WHERE f.key = :key")
 })
 public class FileEntity extends BaseEntity {
     
-    public static final String FIND_BY_NAME = "FileEntity.findByName";
+    public static final String FIND_BY_KEY = "FileEntity.findByKey";
 
     @Column(name = "name")
     private String name;

@@ -121,8 +121,8 @@ public class FileServiceImpl implements FileService {
     
     @Override
     public void finalizeFile(String fileKey) {
-        TypedQuery<FileEntity> query = em.createNamedQuery(FileEntity.FIND_BY_NAME, FileEntity.class);
-        query.setParameter("name", fileKey);
+        TypedQuery<FileEntity> query = em.createNamedQuery(FileEntity.FIND_BY_KEY, FileEntity.class);
+        query.setParameter("key", fileKey);
         try {
             FileEntity entity = query.getSingleResult();
             entity.setUploaded(true);
