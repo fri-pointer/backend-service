@@ -12,6 +12,7 @@ public class FileMapper {
         file.setName(fileEntity.getName());
         file.setLocation(fileEntity.getLocation());
         file.setMimeType(fileEntity.getMimeType());
+        file.setKey(fileEntity.getKey());
         return file;
     }
 

@@ -108,6 +108,7 @@ public class S3UploadService implements UploadService {
     private void createFileStub(String key, String contentType) {
         File file = new File();
         file.setName(key);
+        file.setKey(key);
         file.setFileExtension(FileUtil.getFileExtension(key));
         
         String location = s3Config.getPublicEndpoint() + "/" + key;

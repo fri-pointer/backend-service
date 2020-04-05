@@ -107,6 +107,7 @@ public class FileServiceImpl implements FileService {
         entity.setFileExtension(file.getFileExtension());
         entity.setName(file.getName());
         entity.setLocation(file.getLocation());
+        entity.setKey(file.getKey());
         
         try {
             em.getTransaction().begin();

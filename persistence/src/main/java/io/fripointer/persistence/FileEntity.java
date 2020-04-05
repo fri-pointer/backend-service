@@ -3,9 +3,7 @@ package io.fripointer.persistence;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "files", indexes = {
-    @Index(name = "NAME_UNIQUE_INDEX", columnList = "name", unique = true)
-})
+@Table(name = "files")
 @NamedQueries({
     @NamedQuery(name = FileEntity.FIND_BY_NAME, query = "SELECT f FROM FileEntity f WHERE f.name = :name")
 })
@@ -15,6 +13,9 @@ public class FileEntity extends BaseEntity {
 
     @Column(name = "name")
     private String name;
+    
+    @Column(name = "key", unique = true)
+    private String key;
 
     @Column(name = "location")
     private String location;
@@ -78,5 +79,13 @@ public class FileEntity extends BaseEntity {
     
     public void setUploaded(boolean uploaded) {
         this.uploaded = uploaded;
+    }
+    
+    public String getKey() {
+        return key;
+    }
+    
+    public void setKey(String key) {
+        this.key = key;
     }
 }

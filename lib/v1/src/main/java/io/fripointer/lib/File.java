@@ -1,7 +1,8 @@
 package io.fripointer.lib;
 
 public class File extends BaseType {
-
+    
+    private String key;
     private String name;
     private String location;
     private String mimeType;
@@ -47,4 +48,13 @@ public class File extends BaseType {
     public void setUploaded(boolean uploaded) {
         this.uploaded = uploaded;
     }
+    
+    public String getKey() {
+        return key;
+    }
+    
+    public void setKey(String key) {
+        this.key = key;
+    }
+    
 }
