@@ -26,7 +26,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.URI;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,9 +65,7 @@ public class S3UploadService implements UploadService {
     @Override
     public UploadSignature generateSignature(UploadSignatureRequest signatureRequest) {
     
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        
-        String key = timestamp.getTime() + "-" + signatureRequest.getFilename();
+        String key = FileUtil.timestampFilename(signatureRequest.getFilename());
         String contentType = signatureRequest.getContentType();
         
         createFileStub(key, contentType);
