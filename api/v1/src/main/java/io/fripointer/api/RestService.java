@@ -2,6 +2,9 @@ package io.fripointer.api;
 
 import io.fripointer.api.mappers.RestExceptionMapper;
 import io.fripointer.api.resources.*;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
@@ -9,6 +12,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 @ApplicationPath("/v1")
+@OpenAPIDefinition(
+    info = @Info(title = "FRI Pointer backend service", version = "1.0.0", description = "FRI Pointer REST API."),
+    servers = @Server(url = "http://localhost:8080/v1")
+)
 public class RestService extends Application {
     
     @Override
