@@ -11,7 +11,7 @@ kumuluzee:
     servlet:
       allow-origin: "*"
       supported-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD"
-      exposed-headers: "X-Total-Count"
+      exposed-headers: "X-Total-Count,Content-Disposition"
   openapi:
     enabled: true
     ui:
@@ -31,6 +31,8 @@ kumuluzee:
       disk-space-health-check:
         threshold: 100000000
         type: liveness
+      http-health-check:
+        connection-url: https://keycloak.mjamsek.com/auth
   rest-client:
     disable-jetty-www-auth: true
   datasources:
