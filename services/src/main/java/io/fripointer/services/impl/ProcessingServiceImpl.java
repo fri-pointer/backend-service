@@ -44,6 +44,7 @@ public class ProcessingServiceImpl implements ProcessingService {
                 String fileName = "comments/comment-" +  UUID.randomUUID() + "." + image.getExtension();
                 String imageUrl = uploadService.uploadFile(tempFile, image.getMimeType(), fileName);
                 imageElem.attr("src", imageUrl);
+                tempFile.delete();
                 
             } catch (IOException e) {
                 e.printStackTrace();
