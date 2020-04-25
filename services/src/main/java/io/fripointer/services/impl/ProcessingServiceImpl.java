@@ -51,6 +51,6 @@ public class ProcessingServiceImpl implements ProcessingService {
             }
         });
         
-        return htmlDocument.toString();
+        return htmlDocument.select("body").html();
     }
 }
