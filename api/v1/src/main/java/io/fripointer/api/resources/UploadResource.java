@@ -4,6 +4,7 @@ import com.mjamsek.rest.exceptions.dto.ExceptionResponse;
 import io.fripointer.lib.dto.UploadSignature;
 import io.fripointer.lib.dto.UploadSignatureRequest;
 import io.fripointer.services.FileService;
+import io.fripointer.services.ProcessingService;
 import io.fripointer.services.UploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,9 +13,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.Map;
 
 @Path("/upload")
 @RequestScoped
@@ -27,6 +33,9 @@ public class UploadResource {
     
     @Inject
     private FileService fileService;
+    
+    @Inject
+    private ProcessingService processingService;
     
     @POST
     @Path("/signature")
@@ -55,6 +64,18 @@ public class UploadResource {
     public Response uploadCallback(UploadSignature request) {
         fileService.finalizeFile(request.getKey());
         return Response.noContent().build();
+    }
+    
+    @POST
+    @Path("/extract")
+    public Response extractImageFromHtml(Map<String, Object> request) throws IOException {
+        String html = (String) request.get("html");
+    
+        String outHtml = processingService.processImageInHtml(html);
+        
+        request.put("html", outHtml);
+        
+        return Response.ok(request).build();
     }
     
 }

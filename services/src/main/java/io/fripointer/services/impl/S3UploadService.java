@@ -11,8 +11,10 @@ import io.fripointer.services.UploadService;
 import io.fripointer.utils.FileUtil;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -26,6 +28,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,10 +46,14 @@ public class S3UploadService implements UploadService {
     
     private S3Presigner s3Presigner;
     
+    private S3Client s3Client;
+    
     @PostConstruct
     private void init() {
         AwsCredentials awsCredentials = AwsBasicCredentials
             .create(s3Config.getAccessKeyId(), s3Config.getSecretAccessKey());
+    
+        AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(awsCredentials);
         
         S3Configuration conf = S3Configuration
             .builder()
@@ -58,7 +65,15 @@ public class S3UploadService implements UploadService {
             .region(Region.EU_CENTRAL_1)
             .endpointOverride(URI.create(s3Config.getUploadEndpoint()))
             .serviceConfiguration(conf)
-            .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+            .credentialsProvider(credentialsProvider)
+            .build();
+    
+        this.s3Client = S3Client
+            .builder()
+            .region(Region.EU_CENTRAL_1)
+            .endpointOverride(URI.create(s3Config.getUploadEndpoint()))
+            .serviceConfiguration(conf)
+            .credentialsProvider(credentialsProvider)
             .build();
     }
     
@@ -103,6 +118,22 @@ public class S3UploadService implements UploadService {
         // TODO: save to DB publicEndpoint + / + key
         
         return response;
+    }
+    
+    @Override
+    public String uploadFile(java.io.File file, String mimeType, String fileName) {
+        
+        PutObjectRequest uploadRequest = PutObjectRequest.builder()
+            .bucket(s3Config.getBucket())
+            .key(fileName)
+            .serverSideEncryption(ServerSideEncryption.AES256)
+            .contentType(mimeType)
+            .acl(ObjectCannedACL.PUBLIC_READ)
+            .build();
+        
+        s3Client.putObject(uploadRequest, Paths.get(file.getAbsolutePath()));
+        
+        return s3Config.getPublicEndpoint() + "/" + fileName;
     }
     
     private void createFileStub(String key, String contentType) {
