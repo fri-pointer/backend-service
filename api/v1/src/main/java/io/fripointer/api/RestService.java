@@ -34,6 +34,7 @@ public class RestService extends Application {
         classes.add(StudentProgramResource.class);
         classes.add(UniversityResource.class);
         classes.add(UploadResource.class);
+        classes.add(SetupResource.class);
 
         // Mappers
         classes.add(RestExceptionMapper.class);
