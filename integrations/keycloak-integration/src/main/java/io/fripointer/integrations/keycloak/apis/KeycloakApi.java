@@ -1,6 +1,7 @@
 package io.fripointer.integrations.keycloak.apis;
 
 import com.mjamsek.auth.keycloak.client.KeycloakClient;
+import com.mjamsek.rest.exceptions.NotFoundException;
 import io.fripointer.integrations.keycloak.lib.User;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 
@@ -33,7 +34,7 @@ public interface KeycloakApi {
         @PathParam("realm") String realm,
         @PathParam("userId") String userId,
         User user
-    );
+    ) throws NotFoundException;
     
     @GET
     @Path("/admin/realms/{realm}/users")
@@ -57,6 +58,6 @@ public interface KeycloakApi {
     User getUser(
         @PathParam("realm") String realm,
         @PathParam("userId") String userId
-    );
+    ) throws NotFoundException;
     
 }

@@ -5,15 +5,13 @@ import com.mjamsek.auth.keycloak.client.KeycloakClient;
 import com.mjamsek.rest.dto.EntityList;
 import com.mjamsek.rest.exceptions.NotFoundException;
 import io.fripointer.integrations.keycloak.KeycloakService;
-import io.fripointer.integrations.keycloak.apis.KeycloakApi;
-import io.fripointer.integrations.keycloak.apis.ForbiddenMapper;
-import io.fripointer.integrations.keycloak.apis.NotFoundMapper;
-import io.fripointer.integrations.keycloak.apis.Query;
+import io.fripointer.integrations.keycloak.apis.*;
 import io.fripointer.integrations.keycloak.lib.User;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.WebApplicationException;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +33,7 @@ public class KeycloakServiceImpl implements KeycloakService {
             .baseUri(URI.create(keycloakUrl))
             .register(NotFoundMapper.class)
             .register(ForbiddenMapper.class)
+            .register(UnauthorizedMapper.class)
             .build(KeycloakApi.class);
     }
     
@@ -69,32 +68,45 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
     
     @Override
-    public void updateUser(User user, String userId) {
-        
+    public void updateUser(User user, String userId) throws NotFoundException {
         getUser(userId).ifPresent(existingUser -> {
             
             updateUserFields(existingUser, user);
     
             try {
-                KeycloakClient
-                    .callKeycloak(token -> keycloakApi.updateUser(this.realm, userId, existingUser));
-            } catch (NotFoundException e) {
+                keycloakApi.updateUser(this.realm, userId, existingUser);
+            } catch (WebApplicationException e) {
                 e.printStackTrace();
             }
         });
     }
     
     @Override
-    public void deleteUser(String userId) {
+    public void replaceUser(User user, String userId) throws NotFoundException {
+        try {
+            keycloakApi.updateUser(this.realm, userId, user);
+        } catch (WebApplicationException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void deleteUser(String userId) throws NotFoundException {
         getUser(userId).ifPresent(user -> {
             user.setEnabled(false);
-            updateUser(user, userId);
+            replaceUser(user, userId);
         });
     }
     
     private void updateUserFields(User existingUser, User newValue) {
         
+        if (newValue.isEnabled())
         existingUser.setEnabled(newValue.isEnabled());
-        // TODO:
+        
+        newValue.getAttributes().keySet().forEach(attributeName -> {
+            Object attributeValue = newValue.getAttributes().get(attributeName);
+            existingUser.getAttributes().put(attributeName, attributeValue);
+        });
+        
     }
 }
