@@ -68,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
         // TODO: Handle incorrect parent_id
         CommentEntity commentEntity = CommentMapper.toEntity(comment);
-        commentEntity.setParentId(parentId);
+        // commentEntity.setParentId(parentId);
 
         em.getTransaction().begin();
         em.persist(commentEntity);

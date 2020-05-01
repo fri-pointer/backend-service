@@ -4,6 +4,17 @@
 
         <non-jta-data-source>jdbc/mainDB</non-jta-data-source>
 
+        <class>io.fripointer.persistence.AnswerEntity</class>
+        <class>io.fripointer.persistence.CommentEntity</class>
+        <class>io.fripointer.persistence.CourseEntity</class>
+        <class>io.fripointer.persistence.FacultyEntity</class>
+        <class>io.fripointer.persistence.FileEntity</class>
+        <class>io.fripointer.persistence.PostEntity</class>
+        <class>io.fripointer.persistence.QuestionEntity</class>
+        <class>io.fripointer.persistence.SharedContentEntity</class>
+        <class>io.fripointer.persistence.StudentProgramEntity</class>
+        <class>io.fripointer.persistence.UniversityEntity</class>
+
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL10Dialect"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
