@@ -13,6 +13,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
@@ -28,7 +29,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,7 +121,7 @@ public class S3UploadService implements UploadService {
     }
     
     @Override
-    public String uploadFile(java.io.File file, String mimeType, String fileName) {
+    public String uploadFile(byte[] bytes, String mimeType, String fileName) {
         
         PutObjectRequest uploadRequest = PutObjectRequest.builder()
             .bucket(s3Config.getBucket())
@@ -130,9 +130,9 @@ public class S3UploadService implements UploadService {
             .contentType(mimeType)
             .acl(ObjectCannedACL.PUBLIC_READ)
             .build();
-        
-        s3Client.putObject(uploadRequest, Paths.get(file.getAbsolutePath()));
-        
+        RequestBody body = RequestBody.fromBytes(bytes);
+        s3Client.putObject(uploadRequest, body);
+    
         return s3Config.getPublicEndpoint() + "/" + fileName;
     }
     

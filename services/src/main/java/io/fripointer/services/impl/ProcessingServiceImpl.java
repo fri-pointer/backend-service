@@ -9,10 +9,6 @@ import org.jsoup.select.Elements;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -31,24 +27,11 @@ public class ProcessingServiceImpl implements ProcessingService {
             
             String base64ImageSource = imageElem.attr("src");
             ProcessedImage image = new ProcessedImage(base64ImageSource);
-            
-            try {
-                
-                byte[] imageBytes = Base64.getDecoder().decode(image.getBase64());
-                File tempFile = File.createTempFile("temp-file-base", "." + image.getExtension());
-                
-                try (OutputStream os = new FileOutputStream(tempFile)) {
-                    os.write(imageBytes);
-                }
     
-                String fileName = "comments/comment-" +  UUID.randomUUID() + "." + image.getExtension();
-                String imageUrl = uploadService.uploadFile(tempFile, image.getMimeType(), fileName);
-                imageElem.attr("src", imageUrl);
-                tempFile.delete();
-                
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            byte[] imageBytes = Base64.getDecoder().decode(image.getBase64());
+            String fileName = "comments/comment-" +  UUID.randomUUID() + "." + image.getExtension();
+            String imageUrl = uploadService.uploadFile(imageBytes, image.getMimeType(), fileName);
+            imageElem.attr("src", imageUrl);
         });
         
         return htmlDocument.select("body").html();
