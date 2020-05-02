@@ -13,14 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.net.URI;
 
 @Path("/comments")
 @RequestScoped
@@ -50,6 +45,47 @@ public class CommentResource {
                 .ok(comments.getEntityList())
                 .header(HttpHeaders.X_TOTAL_COUNT, comments.getCount())
                 .build();
+    }
+    
+    @GET
+    @Path("/parent/{parentId}")
+    public Response getCommentsFromParent(@PathParam("parentId") String parentId) {
+        QueryParameters queryParameters = QueryParameters.query(uriInfo.getRequestUri().getQuery()).build();
+        EntityList<Comment> comments = commentService.getCommentsByParentId(parentId, queryParameters);
+        return Response
+            .ok(comments.getEntityList())
+            .header(HttpHeaders.X_TOTAL_COUNT, comments.getCount())
+            .build();
+    }
+    
+    @GET
+    @Path("/{commentId}")
+    public Response getComment(@PathParam("commentId") String commentId) {
+        Comment comment = commentService.getComment(commentId);
+        return Response.ok(comment).build();
+    }
+    
+    @POST
+    @Path("/parent/{parentId}")
+    public Response createComment(@PathParam("parentId") String parentId, Comment comment) {
+        Comment createdComment = commentService.createComment(parentId, comment);
+        URI createdUri = uriInfo.getBaseUriBuilder().path("comments").path(createdComment.getId()).build();
+        return Response.created(createdUri).entity(createdComment).build();
+    }
+    
+    @PUT
+    @Path("/{commentId}")
+    public Response updateComment(@PathParam("commentId") String commentId, Comment comment) {
+        Comment updatedComment = commentService.updateComment(commentId, comment);
+        URI updatedUri = uriInfo.getBaseUriBuilder().path("comments").path(updatedComment.getId()).build();
+        return Response.ok(updatedComment).location(updatedUri).build();
+    }
+    
+    @DELETE
+    @Path("/{commentId}")
+    public Response removeComment(@PathParam("commentId") String commentId) {
+        commentService.removeComment(commentId);
+        return Response.noContent().build();
     }
 
 }

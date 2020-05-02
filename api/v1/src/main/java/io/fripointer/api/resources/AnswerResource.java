@@ -90,8 +90,14 @@ public class AnswerResource {
         Answer newAnswer = answerService.createAnswer(answer);
         return Response.created(URI.create("/answers" + newAnswer.getId())).entity(newAnswer).build();
     }
-
-
+    
+    @POST
+    @Path("/{id}/accept")
+    public Response acceptAnswer(@PathParam("id") String id) {
+        // TODO: accept answer
+        return Response.noContent().build();
+    }
+    
     @PUT
     @Operation(description = "Updates existing answer.",
             summary = "Updates answer.",
@@ -106,7 +112,6 @@ public class AnswerResource {
         Answer updatedAnswer = answerService.updateAnswer(id, answer);
         return Response.ok(updatedAnswer).build();
     }
-
 
     @DELETE
     @Operation(description = "Deletes answer.",
@@ -158,10 +163,9 @@ public class AnswerResource {
             })
     @Path("/{answerId}/comments/{comment_id}")
     public Response getCommentsByAnswerId(@PathParam("answerId") String parentId, @PathParam("comment_id") String commentId){
-        Comment comment = commentService.getComment(parentId, commentId);
+        Comment comment = commentService.getComment(commentId);
         return Response.ok(comment).build();
     }
-
 
     @POST
     @Operation(description = "Creates new comment for given answer.",
@@ -193,7 +197,7 @@ public class AnswerResource {
             })
     @Path("{answerId}/comments/{commentId}")
     public Response updateAnswerComment(@PathParam("answerId") String parentId, @PathParam("commentId") String commentId, Comment comment){
-        Comment updatedComment = commentService.updateComment(parentId, commentId, comment);
+        Comment updatedComment = commentService.updateComment(commentId, comment);
         return Response.ok(updatedComment).build();
     }
 
@@ -207,7 +211,7 @@ public class AnswerResource {
             })
     @Path("{answerId}/comments/{commentId}")
     public Response deleteAnswerComment(@PathParam("answerId") String parentId, @PathParam("commentId") String commentId){
-        commentService.removeComment(parentId, commentId);
+        commentService.removeComment(commentId);
         return Response.noContent().build();
     }
 

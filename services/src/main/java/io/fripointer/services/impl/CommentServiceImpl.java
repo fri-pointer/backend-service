@@ -2,18 +2,22 @@ package io.fripointer.services.impl;
 
 import com.kumuluz.ee.logs.LogManager;
 import com.kumuluz.ee.logs.Logger;
+import com.kumuluz.ee.rest.beans.QueryFilter;
 import com.kumuluz.ee.rest.beans.QueryParameters;
+import com.kumuluz.ee.rest.enums.FilterOperation;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 import com.mjamsek.rest.dto.EntityList;
+import com.mjamsek.rest.exceptions.NotFoundException;
 import io.fripointer.lib.Comment;
 import io.fripointer.mappers.CommentMapper;
 import io.fripointer.persistence.CommentEntity;
+import io.fripointer.persistence.CommentableEntity;
+import io.fripointer.persistence.constants.PersistenceConst;
 import io.fripointer.services.CommentService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,23 +26,13 @@ public class CommentServiceImpl implements CommentService {
 
     private static final Logger log = LogManager.getLogger(CommentServiceImpl.class.getName());
 
-    // TODO: Custom exceptions (Not modified, entity required etc.)
-
-    @PersistenceContext(unitName = "main-jpa-unit")
+    @PersistenceContext(unitName = PersistenceConst.MAIN_JPA_UNIT)
     private EntityManager em;
 
     @Override
     public EntityList<Comment> getCommentsByParentId(String parentId, QueryParameters params) {
-        TypedQuery<CommentEntity> query = em.createNamedQuery(CommentEntity.FIND_BY_PARENT_ID, CommentEntity.class);
-        query.setParameter("parentId", parentId);
-
-        List<Comment> comments = query.getResultStream()
-                .map(CommentMapper::fromEntity)
-                .collect(Collectors.toList());
-
-        long count = comments.size();
-
-        return new EntityList<>(comments, count);
+        params.getFilters().add(new QueryFilter("parentId", FilterOperation.EQ, parentId));
+        return getComments(params);
     }
 
     @Override
@@ -52,10 +46,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment getComment(String parentId, String commentId) {
-        if(commentId == null || parentId == null)
-            return null;
-        return CommentMapper.fromEntity(getCommentEntityByParentId(parentId, commentId));
+    public Comment getComment(String commentId) {
+        CommentEntity entity = em.find(CommentEntity.class, commentId);
+        if(entity == null) {
+            throw new NotFoundException("error.not-found", CommentEntity.class, commentId);
+        }
+        return CommentMapper.fromEntity(entity);
     }
 
     @Override
@@ -65,33 +61,36 @@ public class CommentServiceImpl implements CommentService {
             log.info("Comment not created - input is null");
             return null;
         }
-
-        // TODO: Handle incorrect parent_id
-        CommentEntity commentEntity = CommentMapper.toEntity(comment);
-        // commentEntity.setParentId(parentId);
-
+    
+        CommentableEntity parent = em.find(CommentableEntity.class, parentId);
+        if (parent == null) {
+            throw new NotFoundException("error.not-found", CommentableEntity.class, parentId);
+        }
+        
+        CommentEntity newComment = new CommentEntity();
+        newComment.setParent(parent);
+        newComment.setText(comment.getText());
+        
         em.getTransaction().begin();
-        em.persist(commentEntity);
+        em.persist(newComment);
         em.getTransaction().commit();
 
-        log.info("Comment with id {} created", commentEntity.getId());
+        log.info("Comment with id {} created", newComment.getId());
 
-        return CommentMapper.fromEntity(commentEntity);
+        return CommentMapper.fromEntity(newComment);
     }
 
 
     @Override
-    public Comment updateComment(String parentId, String commentId, Comment comment) {
+    public Comment updateComment(String commentId, Comment comment) {
         if(comment == null){
             log.info("Comment not created - input is null");
             return null;
         }
 
-        CommentEntity commentEntity = getCommentEntityByParentId(parentId, commentId);
-
+        CommentEntity commentEntity = em.find(CommentEntity.class, commentId);
         if(commentEntity == null) {
-            log.info("Comment with id {} not found", commentId);
-            return null;
+            throw new NotFoundException("error.not-found", CommentEntity.class, commentId);
         }
 
         try {
@@ -108,21 +107,17 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void removeComment(String parentId, String commentId) {
-        CommentEntity commentEntity = getCommentEntityByParentId(parentId, commentId);
-        if(commentEntity != null) {
-            em.getTransaction().begin();
-            em.remove(commentEntity);
-            em.getTransaction().commit();
-            log.info("Comment with id {} removed", commentId);
+    public void removeComment(String commentId) {
+        CommentEntity commentEntity = em.find(CommentEntity.class, commentId);
+        
+        if (commentEntity == null) {
+            throw new NotFoundException("error.not-found", CommentEntity.class, commentId);
         }
+        
+        em.getTransaction().begin();
+        em.remove(commentEntity);
+        em.getTransaction().commit();
+        log.info("Comment with id {} removed", commentId);
     }
 
-    public CommentEntity getCommentEntityByParentId(String parentId, String commentId) {
-        if(commentId == null || parentId == null)
-            return null;
-        return (CommentEntity) em.createNamedQuery(CommentEntity.FIND_BY_PARENT_ID_AND_COMMENT_ID)
-                .setParameter("parentId", parentId)
-                .setParameter("commentId", commentId).getSingleResult();
-    }
 }
