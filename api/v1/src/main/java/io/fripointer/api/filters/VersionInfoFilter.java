@@ -28,7 +28,7 @@ public class VersionInfoFilter implements Filter {
             
             resp.addHeader(HttpHeaders.X_SERVICE_NAME, serviceName);
             resp.addHeader(HttpHeaders.X_SERVICE_VERSION, serviceVersion);
-            resp.addHeader("X-Service-Env", serviceEnv);
+            resp.addHeader(HttpHeaders.X_SERVICE_ENV, serviceEnv);
     
             chain.doFilter(request, resp);
         } else {
