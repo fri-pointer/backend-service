@@ -2,6 +2,7 @@ package io.fripointer.services.impl;
 
 import com.kumuluz.ee.logs.LogManager;
 import com.kumuluz.ee.logs.Logger;
+import com.kumuluz.ee.rest.beans.Queried;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 import com.mjamsek.rest.dto.EntityList;
@@ -29,12 +30,13 @@ public class UniversityServiceImpl implements UniversityService {
     
     @Override
     public EntityList<University> getUniversities(QueryParameters params) {
-        List<University> universities = JPAUtils.queryEntities(em, UniversityEntity.class, params)
-            .stream()
+        Queried<UniversityEntity> queried = JPAUtils.getQueried(em, UniversityEntity.class, params);
+        
+        List<University> universities = queried.stream()
             .map(UniversityMapper::fromEntity)
             .collect(Collectors.toList());
-        long count = JPAUtils.queryEntitiesCount(em, UniversityEntity.class, params);
-        return new EntityList<>(universities, count);
+            
+        return new EntityList<>(universities, queried.getTotalCount());
     }
     
     @Override
