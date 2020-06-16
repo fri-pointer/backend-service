@@ -2,6 +2,7 @@ package io.fripointer.services.impl;
 
 import com.kumuluz.ee.logs.LogManager;
 import com.kumuluz.ee.logs.Logger;
+import com.kumuluz.ee.rest.beans.Queried;
 import com.kumuluz.ee.rest.beans.QueryParameters;
 import com.kumuluz.ee.rest.utils.JPAUtils;
 import com.mjamsek.rest.dto.EntityList;
@@ -28,12 +29,13 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     public EntityList<Answer> getAnswers(QueryParameters params) {
-        List<Answer> answers = JPAUtils.queryEntities(em, AnswerEntity.class, params)
-                .stream()
+        Queried<AnswerEntity> queried = JPAUtils.getQueried(em, AnswerEntity.class, params);
+        
+        List<Answer> answers = queried.stream()
                 .map(AnswerMapper::fromEntity)
                 .collect(Collectors.toList());
-        long count = JPAUtils.queryEntitiesCount(em, AnswerEntity.class, params);
-        return new EntityList<>(answers, count);
+        
+        return new EntityList<>(answers, queried.getTotalCount());
     }
 
     @Override
