@@ -22,7 +22,7 @@
         <kumuluzee-rest-client.version>1.4.1.1</kumuluzee-rest-client.version>
         <kumuluzee-openapi.version>1.0.1</kumuluzee-openapi.version>
 
-        <jsoup.version>1.13.1</jsoup.version>
+        <jsoup.version>1.14.2</jsoup.version>
         <aws-sdk.version>2.11.14</aws-sdk.version>
         <jackson.version>2.9.10.4</jackson.version>
         <postgres.version>42.2.13</postgres.version>
